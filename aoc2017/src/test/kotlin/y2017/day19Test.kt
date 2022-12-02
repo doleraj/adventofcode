@@ -1,7 +1,7 @@
 package y2017
 
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import java.io.File
 
 class day19Test {
