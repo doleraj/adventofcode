@@ -1,7 +1,7 @@
 package y2015.src.test.kotlin.y2015
 
-import org.junit.Assert.*
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 import y2015.day2
 import y2015.day2Second
 import java.io.File
