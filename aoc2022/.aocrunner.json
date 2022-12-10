@@ -140,16 +140,16 @@
     },
     {
       "part1": {
-        "solved": false,
-        "result": null,
+        "solved": true,
+        "result": "13720",
         "attempts": [],
-        "time": null
+        "time": 0.0619
       },
       "part2": {
-        "solved": false,
-        "result": null,
+        "solved": true,
+        "result": "FBURHZCH",
         "attempts": [],
-        "time": null
+        "time": 0.0797
       }
     },
     {
