@@ -5,9 +5,9 @@ import { it } from "node:test";
 const parseInput = (rawInput: string) => rawInput;
 
 interface Monkey {
-  items: number[];
-  operation: (val: number) => number;
-  denominator: number;
+  items: bigint[];
+  operation: (val: bigint) => bigint;
+  denominator: bigint;
   trueMonkeyIndex: number;
   falseMonkeyIndex: number;
   inspections: number;
@@ -19,23 +19,23 @@ const createMonkeys = (input: string): Monkey[] => {
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
     if (lines[lineIndex].startsWith("Monkey")) {
       const startingItemsLine = lines[++lineIndex];
-      const startingItems = startingItemsLine.substring("  Starting items: ".length).split((", ")).map(Number);
+      const startingItems = startingItemsLine.substring("  Starting items: ".length).split((", ")).map(BigInt);
 
       const operationLine = lines[++lineIndex];
       const operationMatch = operationLine.match(/\s?Operation: new = old ([+*]) (old|\d+)/);
       let operation;
       if (operationMatch!![2] === "old") {
         if (operationMatch!![1] === "+") {
-          operation = (val: number) => val + val;
+          operation = (val: bigint) => val + val;
         } else {
-          operation = (val: number) => val * val;
+          operation = (val: bigint) => val * val;
         }
       } else {
-        const other = Number(operationMatch!![2]);
+        const other = BigInt(operationMatch!![2]);
         if (operationMatch!![1] === "+") {
-          operation = (val: number) => val + other;
+          operation = (val: bigint) => val + other;
         } else {
-          operation = (val: number) => val * other;
+          operation = (val: bigint) => val * other;
         }
       }
 
@@ -51,7 +51,7 @@ const createMonkeys = (input: string): Monkey[] => {
       monkeys.push({
         items: startingItems,
         operation: operation,
-        denominator: Number(testMatch!![1]),
+        denominator: BigInt(testMatch!![1]),
         trueMonkeyIndex: Number(trueMonkeyMatch!![1]),
         falseMonkeyIndex: Number(falseMonkeyMatch!![1]),
         inspections: 0,
@@ -74,7 +74,7 @@ const part1 = (rawInput: string) => {
         // console.log(`  Monkey inspects an item with a worry level of ${item}.`);
         const newWorryVal = monkey.operation(item);
         // console.log(`    Worry level becomes ${newWorryVal}.`);
-        const boredWorryVal = Math.floor(newWorryVal / 3);
+        const boredWorryVal = newWorryVal / 3n;
         // console.log(`    Monkey gets bored with item. Worry level is divided by 3 to ${boredWorryVal}.`);
         let nextMonkeyIndex;
         if (boredWorryVal % monkey.denominator) {
@@ -102,8 +102,44 @@ const part1 = (rawInput: string) => {
 
 const part2 = (rawInput: string) => {
   const input = parseInput(rawInput);
+  let round = 0;
+  const monkeys = createMonkeys(input);
+  const maxWorry = monkeys.reduce((accum, monkey) => accum * monkey.denominator, 1n);
 
-  return;
+  while (round < 10000) {
+    monkeys.forEach((monkey, monkeyIndex) => {
+      // console.log(`Monkey ${monkeyIndex}:`);
+      monkey.items.forEach((item, itemIndex) => {
+        // console.log(`  Monkey inspects an item with a worry level of ${item}.`);
+        const newWorryVal = monkey.operation(item);
+        // console.log(`    Worry level becomes ${newWorryVal}.`);
+        const wrappedWorryVal = newWorryVal % maxWorry;
+        // console.log(`    Worry level adjusted back into worry space, to ${wrappedWorryVal}.`);
+        let nextMonkeyIndex;
+        if (wrappedWorryVal % monkey.denominator) {
+          // console.log(`     Current worry level is not divisible by ${monkey.denominator}`);
+          nextMonkeyIndex = monkey.falseMonkeyIndex;
+        } else {
+          // console.log(`     Current worry level is divisible by ${monkey.denominator}`);
+          nextMonkeyIndex = monkey.trueMonkeyIndex;
+        }
+        monkeys[nextMonkeyIndex].items.push(wrappedWorryVal);
+        monkey.inspections++;
+        // console.log(`     Item with worry level ${newWorryVal} is thrown to monkey ${nextMonkeyIndex}`);
+      })
+      monkey.items = [];
+    });
+    round++;
+    if (round % 1000 === 0) {
+      console.log(`After round ${round}, the monkeys are holding items with these worry levels:`)
+      console.log(monkeys.map((monkey, index) => `Monkey ${index}: inspected items ${monkey.inspections} times.`).join("\n"));
+    }
+  }
+
+
+  const inspectionCounts = monkeys.map(monkey => monkey.inspections).sort((a, b) => b - a);
+  // console.log(inspectionCounts);
+  return inspectionCounts[0] * inspectionCounts[1];
 };
 
 run({
@@ -146,10 +182,37 @@ Monkey 3:
   },
   part2: {
     tests: [
-      // {
-      //   input: ``,
-      //   expected: "",
-      // },
+      {
+        input: `
+Monkey 0:
+  Starting items: 79, 98
+  Operation: new = old * 19
+  Test: divisible by 23
+    If true: throw to monkey 2
+    If false: throw to monkey 3
+
+Monkey 1:
+  Starting items: 54, 65, 75, 74
+  Operation: new = old + 6
+  Test: divisible by 19
+    If true: throw to monkey 2
+    If false: throw to monkey 0
+
+Monkey 2:
+  Starting items: 79, 60, 97
+  Operation: new = old * old
+  Test: divisible by 13
+    If true: throw to monkey 1
+    If false: throw to monkey 3
+
+Monkey 3:
+  Starting items: 74
+  Operation: new = old + 3
+  Test: divisible by 17
+    If true: throw to monkey 0
+    If false: throw to monkey 1`,
+        expected: 2713310158,
+      },
     ],
     solution: part2,
   },
