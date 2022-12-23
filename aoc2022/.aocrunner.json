@@ -289,16 +289,19 @@
     },
     {
       "part1": {
-        "solved": false,
-        "result": null,
-        "attempts": [],
-        "time": null
+        "solved": true,
+        "result": "2215",
+        "attempts": [
+          "-21864",
+          "534"
+        ],
+        "time": 84.6916
       },
       "part2": {
-        "solved": false,
-        "result": null,
+        "solved": true,
+        "result": "8927480683",
         "attempts": [],
-        "time": null
+        "time": 464.25
       }
     },
     {
