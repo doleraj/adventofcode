@@ -199,8 +199,24 @@ const part2 = (rawInput: string) => {
   let topStoneLine = -1;
   let stoneCount = 1;
   let gustCount = 0;
+  let bankedHeight = 0;
 
-  while (stoneCount <= 2022) {
+  //2729
+
+  let lastN = new Array(15).fill([""]);
+  while (stoneCount <= 1000000000000) {
+  // while (stoneCount <= 6009) {
+    if (bankedHeight > 0 && stoneCount < 1000000000000 - 1720) {
+      stoneCount += 1720;
+      bankedHeight += 2729;
+
+      if (stoneCount % 1000000000 <= 1720) {
+        console.log(`After ${stoneCount} stones, ${bankedHeight + topStoneLine + 1}`);
+        // printGrid(playGrid, [], 0, 0);
+      }
+
+      continue;
+    }
     // console.log(`=== Stone ${stoneCount}`);
     const stone = [...rocks[(stoneCount - 1) % 5]].reverse();
     // Expand the grid to make room
@@ -278,18 +294,57 @@ const part2 = (rawInput: string) => {
       stoneLine.forEach((cell, xIndex) => {
         playGrid[insertY + yIndex][insertX + xIndex] = cell === "@" ? "#" : playGrid[insertY + yIndex][insertX + xIndex];
       });
-    })
+    });
+
+    // console.log((topStoneLine - 1321) % 2729)
+    if (topStoneLine > 1321 && (topStoneLine - 1321) % 2729 === 0) {
+      // console.log(playGrid[topStoneLine]);
+    //   // console.log(`boop`)
+      for (let i = 0; i < 2729; i++) {
+        playGrid.shift();
+      }
+      topStoneLine = topStoneLine - 2729;
+      bankedHeight += 2729;
+      console.log(`resetting after ${stoneCount} stones`)
+    //   // printGrid(playGrid, [], 0, 0);
+    }
 
     // printGrid(playGrid, [], 0, 0);
 
-    if (stoneCount % 100 === 0) {
-      console.log(`After ${stoneCount} stones, ${topStoneLine + 1}`);
+    if (stoneCount % 1000000000 === 0) {
+      console.log(`After ${stoneCount} stones, ${bankedHeight + topStoneLine + 1}`);
+      // printGrid(playGrid, [], 0, 0);
     }
     stoneCount++;
   }
   // printGrid(playGrid, [], 0, 0);
-  console.log(`After ${stoneCount - 1} stones, ${topStoneLine + 1}`);
-  return topStoneLine + 1;
+
+  // let checkWindowIndex = 0;
+  // while (checkWindowIndex < playGrid.length - 16) {
+  //   const foundIndeces = [];
+  //   for (let i = 0; i < playGrid.length - 16; i++) {
+  //     if (i === checkWindowIndex) continue;
+  //     let matches = true;
+  //     for (let j = 0; j < 15; j++) {
+  //       matches = matches && playGrid[checkWindowIndex + j].toString() === playGrid[i + j].toString();
+  //     }
+  //     if (matches) {
+  //       foundIndeces.push(i);
+  //     }
+  //   }
+  //   if (foundIndeces.length > 1) {
+  //     for (let i = 0; i < foundIndeces.length; i++) {
+  //       // printGrid(playGrid.slice(foundIndeces[i], foundIndeces[i] + 20), [], 0, 0);
+  //     }
+  //     console.log(`cycle detected at indeces ${foundIndeces}, matching checkWindow starting at ${checkWindowIndex}`);
+  //     // checkWindowIndex += 15;
+  //   }
+  //
+  //   checkWindowIndex++;
+  // }
+
+  console.log(`After ${stoneCount - 1} stones, ${bankedHeight + topStoneLine + 1}`);
+  return bankedHeight + topStoneLine + 1;
 };
 
 run({
@@ -304,13 +359,13 @@ run({
   },
   part2: {
     tests: [
-      {
-        input: `>>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>`,
-        expected: 1514285714288,
-      },
+      // {
+      //   input: `>>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>`,
+      //   expected: 1514285714288,
+      // },
     ],
     solution: part2,
   },
   trimTestInputs: true,
-  onlyTests: true,
+  onlyTests: false,
 });
