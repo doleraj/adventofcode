@@ -14,11 +14,15 @@
   "author": "Art Doler",
   "license": "ISC",
   "devDependencies": {
+    "@types/lodash": "^4.14.191",
     "@types/node": "^16.11.6",
     "aocrunner": "^1.9.6",
     "prettier": "^2.4.1"
   },
   "engines": {
     "node": ">=16.13.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
   }
 }
