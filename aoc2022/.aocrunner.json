@@ -331,15 +331,16 @@
         "attempts": [
           "139364"
         ],
-        "time": 34.9156
+        "time": 33.7451
       },
       "part2": {
-        "solved": false,
-        "result": "129132",
+        "solved": true,
+        "result": "15426",
         "attempts": [
-          "129132"
+          "129132",
+          "47237"
         ],
-        "time": 62959.6534
+        "time": 25.5395
       }
     },
     {
