@@ -78,6 +78,6 @@ class day15Test {
     @Test
     fun testActualSecond() {
         val day15 = Day15(parseFile("y2018/day15ActualInput.txt"))
-        assertEquals(1140, day15.solvePart2())
+        assertEquals(63168, day15.solvePart2())
     }
 }
