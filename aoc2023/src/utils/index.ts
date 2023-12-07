@@ -29,3 +29,5 @@
  *     import { myUtil } from '../utils'
  *
  */
+
+import "./array-extensions.js"
