@@ -31,3 +31,4 @@
  */
 
 import "./array-extensions.js"
+export { lcmArray } from "../utils/math.js";
