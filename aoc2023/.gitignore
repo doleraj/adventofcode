@@ -1,7 +1,7 @@
 node_modules/
 *.temp.*
 */**/*.temp.*
-*/**/input.txt
+*/**/input*.txt
 *.log
 */**/*.log
 .idea
