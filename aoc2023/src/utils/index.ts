@@ -32,3 +32,4 @@
 
 import "./array-extensions.js"
 export { lcmArray } from "../utils/math.js";
+export { memoize } from "../utils/memoize.js";
