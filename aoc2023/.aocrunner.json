@@ -317,13 +317,13 @@
         "solved": true,
         "result": "3795",
         "attempts": [],
-        "time": 206.4052
+        "time": 162.8398
       },
       "part2": {
-        "solved": true,
+        "solved": false,
         "result": "630129824772393",
         "attempts": [],
-        "time": 201.7204
+        "time": 168.9518
       }
     },
     {
@@ -381,13 +381,13 @@
     },
     {
       "part1": {
-        "solved": false,
+        "solved": true,
         "result": "547080",
         "attempts": [
           "519270",
           "547410"
         ],
-        "time": 2350840.4913
+        "time": 3094860.7605
       },
       "part2": {
         "solved": false,

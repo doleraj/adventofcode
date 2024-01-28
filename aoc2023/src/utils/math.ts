@@ -21,4 +21,8 @@ export const lcmArray = (numbers: number[]) => {
     return numbers.reduce(lcm, 1);
 }
 
+export const manhattanDistance = (location: number[], end: { 0: number, 1: number }): number => {
+    return Math.abs(location[0] - end[0]) + Math.abs(location[1] - end[1]);
+}
+
 
