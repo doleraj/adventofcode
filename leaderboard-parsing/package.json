@@ -1,0 +1,30 @@
+{
+  "name": "leaderboard-parsing",
+  "version": "1.0.0",
+  "description": "Parsing leaderboard JSON output",
+  "type": "module",
+  "scripts": {
+    "start": "aocrunner day",
+    "build": "tsc"
+  },
+  "keywords": [
+    "aoc"
+  ],
+  "author": "Arthur Doler",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^16.18.66"
+  },
+  "engines": {
+    "node": ">=16.13.0"
+  },
+  "dependencies": {
+    "canvas": "^2.11.2",
+    "chart.js": "^4.4.1",
+    "chartjs-adapter-date-fns": "^3.0.0",
+    "chartjs-plugin-autocolors": "^0.2.2",
+    "chartjs-plugin-datalabels": "^2.2.0",
+    "date-fns": "^2.30.0",
+    "typescript": "^5.3.2"
+  }
+}
