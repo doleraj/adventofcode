@@ -44,15 +44,18 @@ fs.existsSync('cache') || fs.mkdirSync('cache');
 fs.existsSync('images') || fs.mkdirSync('images');
 
 const fetchLeaderboard = async () => {
-  if (fs.existsSync('cache/leaderboard.json') && fs.existsSync('cache/fetchtime')) {
-    const lastFetchTimeStr = fs.readFileSync('cache/fetchtime', 'utf-8');
-    const lastFetchTime = Number.parseInt(lastFetchTimeStr);
-    if (Date.now() - lastFetchTime < 15 * 60 * 1000) {
+  if (fs.existsSync('cache/leaderboard.json') && fs.existsSync('cache/fetchdetails')) {
+    const lastFetchSplits = fs.readFileSync('cache/fetchdetails', 'utf-8').split(",");
+    const lastFetchTime = Number.parseInt(lastFetchSplits[0]);
+    const year = lastFetchSplits[1];
+    const leaderboardId = lastFetchSplits[2];
+
+    if (year === process.env.YEAR && leaderboardId == process.env.LEADERBOARD_ID && Date.now() - lastFetchTime < 15 * 60 * 1000) {
       console.log("Reusing cached leaderboard.");
       return;
     }
   }
-  fs.writeFileSync('cache/fetchtime', Date.now().toString());
+  fs.writeFileSync('cache/fetchdetails', `${Date.now().toString()},${process.env.YEAR},${process.env.LEADERBOARD_ID}`);
     
   const response = await fetch(`https://adventofcode.com/${process.env.YEAR}/leaderboard/private/view/${process.env.LEADERBOARD_ID}.json`, {
     headers: {
