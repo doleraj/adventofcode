@@ -56,7 +56,7 @@ const fetchLeaderboard = async () => {
     }
   }
   fs.writeFileSync('cache/fetchdetails', `${Date.now().toString()},${process.env.YEAR},${process.env.LEADERBOARD_ID}`);
-    
+
   const response = await fetch(`https://adventofcode.com/${process.env.YEAR}/leaderboard/private/view/${process.env.LEADERBOARD_ID}.json`, {
     headers: {
       cookie: `session=${process.env.AOC_SESSION_KEY}`
@@ -109,7 +109,7 @@ const parseLeaderboardAndRenderCharts = () => {
   for (const member of members) {
       const starTimes: number[] = [];
       const starTimesWithPosition: StarAndTime[] = [];
-      
+
       for (const [completionDay, completionDayLevel] of Object.entries(member.completion_day_level)) {
           for (const [dayStarNumber, star] of Object.entries(completionDayLevel)) {
             const starNumber = dayStarNumber === "2" ? 2* Number.parseInt(completionDay) : (2 * Number.parseInt(completionDay)) - 1;
@@ -123,7 +123,7 @@ const parseLeaderboardAndRenderCharts = () => {
   }
 
   const minDate = new Date();
-  minDate.setUTCFullYear(2023, 11, 1);
+  minDate.setUTCFullYear(2024, 11, 1);
   minDate.setUTCHours(5, 0, 0);
   const maxDateTS = Math.max(...members.map((member) => Math.max(...starTimesByMember[member.id])));
 
