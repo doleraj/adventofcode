@@ -1,42 +1,86 @@
-interface DijkstrasCoordinate { y: number; x: number; distance: number; visited: boolean }
+import { priorityQueue } from "./index.js";
 
-const updateNeighbors = (currentNode: DijkstrasCoordinate, grid: number[][], nodes: DijkstrasCoordinate[][]) => {
-  [[-1, 0], [1, 0], [0, -1], [0, 1]].map(candidateModifiers => {
-    const nextYIndex = currentNode.y + candidateModifiers[0];
-    const nextXIndex = currentNode.x + candidateModifiers[1];
-    if (nextXIndex < 0 || nextYIndex < 0 || nextXIndex === grid.length || nextYIndex === grid[0].length) {
-      return;
-    } else if (nodes[nextYIndex][nextXIndex].visited) {
-      return;
+export type Orientation = "N" | "E" | "S" | "W";
+export type DijkstrasCoordinate = { y: number; x: number; distance: number; previousNode?: DijkstrasCoordinate };
+export type DijkstrasAPCoordinate = { y: number; x: number; distance: number; orientation: Orientation; previousNodes: DijkstrasAPCoordinate[] };
+
+export const toSetToken = (thing: { y: number, x: number }): string => `[${thing.y},${thing.x}]`;
+export const toAPSetToken = (thing: { y: number, x: number, orientation: Orientation }): string =>
+  `[${thing.y},${thing.x},${thing.orientation}]`;
+
+export const runDijkstras = (grid: number[][], start: number[], end: number[],
+    generateNeighbors: (currentNode: DijkstrasCoordinate, grid: number[][]) => DijkstrasCoordinate[]): number => {
+
+  const startNode: DijkstrasCoordinate = { y: start[0], x: start[1], distance: 0, previousNode: { y: start[0], x: start[1] - 1, distance: 0 } };
+
+  let nodesToVisit = priorityQueue<DijkstrasCoordinate>();
+  nodesToVisit.insert(startNode, 0);
+  const visited: string[] = [];
+  const visitedNodes: DijkstrasCoordinate[] = [];
+  while (!nodesToVisit.isEmpty()) {
+    const nextNode = nodesToVisit.pop()!!;
+    if (visited.includes(toSetToken(nextNode))) {
+      continue;
     }
 
-    const currentVal = grid[currentNode.y][currentNode.x];
-    const nextVal = grid[nextYIndex][nextXIndex];
-    if (nextVal == currentVal + 1) {
-      const nextDistance = currentNode.distance + 1;
-      if (nextDistance < nodes[nextYIndex][nextXIndex].distance) {
-        // console.log(`Updating ${nextYIndex}, ${nextXIndex} to ${nextDistance}`)
-        nodes[nextYIndex][nextXIndex].distance = nextDistance;
-      }
-    }
-  });
-}
-
-const runDijkstras = (grid: number[][], start: number[], end: number[]): number => {
-  const nodes = grid.map((line, y) =>
-    line.map((cell, x) => ({ y, x, distance: Number.POSITIVE_INFINITY, visited: false } as DijkstrasCoordinate)));
-  nodes[start[0]][start[1]].distance = 0;
-
-  let sortedUnvisitedNodes = nodes.flat().filter(node => !node.visited);
-  sortedUnvisitedNodes.sort((a, b) => b.distance - a.distance);
-  while (sortedUnvisitedNodes.length > 0 && sortedUnvisitedNodes[sortedUnvisitedNodes.length - 1].distance != Number.POSITIVE_INFINITY) {
-    const nextNode = sortedUnvisitedNodes.pop()!!;
-    nextNode.visited = true;
-    updateNeighbors(nextNode, grid, nodes);
-    sortedUnvisitedNodes = sortedUnvisitedNodes.filter(node => !node.visited);
-    sortedUnvisitedNodes.sort((a, b) => b.distance - a.distance);
+    visited.push(toSetToken(nextNode));
+    visitedNodes.push(nextNode);
+    generateNeighbors(nextNode, grid).forEach(neighbor => {
+      nodesToVisit.insert(neighbor, neighbor.distance);
+    });
   }
 
-  const endNodes = nodes.flat().filter(node => node.y == end[0] && node.x == end[1]);
+  const endNodes = visitedNodes.filter(node => node.y === end[0] && node.x === end[1]);
   return endNodes.map(node => node.distance).sort((a, b) => a - b)[0];
+}
+
+const visitBackNode = (node: DijkstrasAPCoordinate, allVisitedNodesWithOrientations: Set<string>, allVisitedNodes: Set<string>) => {
+  const id = toAPSetToken(node);
+  if (allVisitedNodesWithOrientations.has(id)) {
+    return;
+  }
+
+  allVisitedNodesWithOrientations.add(id);
+  allVisitedNodes.add(toSetToken(node));
+
+  node.previousNodes.forEach((next) => {
+    visitBackNode(next, allVisitedNodesWithOrientations, allVisitedNodes);
+  })
+}
+
+export const runAllPathDijkstras = (grid: number[][], start: number[], end: number[],
+                             generateNeighbors: (currentNode: DijkstrasAPCoordinate, grid: number[][]) => DijkstrasAPCoordinate[]): number => {
+
+  const startNode: DijkstrasAPCoordinate = { y: start[0], x: start[1], distance: 0, orientation: "E", previousNodes: [] };
+
+  let nodesToVisit = priorityQueue<DijkstrasAPCoordinate>();
+  nodesToVisit.insert(startNode, 0);
+  const visited: string[] = [];
+  const visitedNodes: DijkstrasAPCoordinate[] = [];
+  while (!nodesToVisit.isEmpty()) {
+    const nextNode = nodesToVisit.pop()!!;
+    if (visited.includes(toAPSetToken(nextNode))) {
+      const oldNode = visitedNodes.find(node =>
+        node.y === nextNode.y && node.x === nextNode.x && node.orientation === nextNode.orientation)!!;
+
+      if (nextNode.distance <= oldNode.distance) {
+        oldNode.previousNodes.push(...nextNode.previousNodes);
+      }
+      continue;
+    }
+
+    visited.push(toAPSetToken(nextNode));
+    visitedNodes.push(nextNode);
+    generateNeighbors(nextNode, grid).forEach(neighbor => {
+      nodesToVisit.insert(neighbor, neighbor.distance);
+    });
+  }
+
+  const endNodes = visitedNodes.filter(node => node.y === end[0] && node.x === end[1]);
+  let endNode : DijkstrasAPCoordinate = endNodes[0];
+  const allVisitedNodesWithOrientations = new Set<string>();
+  const allVisitedNodes = new Set<string>();
+  visitBackNode(endNode, allVisitedNodesWithOrientations, allVisitedNodes);
+
+  return allVisitedNodes.size;
 }
