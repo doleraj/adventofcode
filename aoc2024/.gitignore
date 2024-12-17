@@ -2,6 +2,7 @@ node_modules
 *.temp.*
 */**/*.temp.*
 */**/input.txt
+*/**/decoded_input.txt
 *.log
 */**/*.log
 .idea
