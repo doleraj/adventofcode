@@ -25,6 +25,10 @@ export const manhattanDistance = (location: number[], end: { 0: number, 1: numbe
     return Math.abs(location[0] - end[0]) + Math.abs(location[1] - end[1]);
 }
 
+export const manhattanDistanceCoord = (location: { y: number, x: number }, end: { y: number, x: number }): number => {
+    return Math.abs(location.y - end.y) + Math.abs(location.x - end.x);
+}
+
 export const doActualModNotFakeAlmostCorrectMod = (num: number, mod: number) => {
     return ((num % mod) + mod) % mod;
 };
