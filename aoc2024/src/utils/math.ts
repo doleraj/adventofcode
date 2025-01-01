@@ -33,3 +33,28 @@ export const doActualModNotFakeAlmostCorrectMod = (num: number, mod: number) => 
     return ((num % mod) + mod) % mod;
 };
 
+
+export const permute = <T>(base: T[]) => {
+    const result = [base.slice()];
+    const current = new Array(base.length).fill(0);
+
+    let i = 1;
+    while (i < base.length) {
+        if (current[i] < i) {
+            const k = i % 2 && current[i];
+            const p = base[i];
+            base[i] = base[k];
+            base[k] = p;
+
+            ++current[i];
+            i = 1;
+            result.push(base.slice());
+        } else {
+            current[i] = 0;
+            ++i;
+        }
+    }
+
+    return result;
+}
+
