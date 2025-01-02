@@ -347,16 +347,16 @@
     },
     {
       "part1": {
-        "solved": false,
-        "result": null,
+        "solved": true,
+        "result": "51401618891888",
         "attempts": [],
-        "time": null
+        "time": 1.6473
       },
       "part2": {
-        "solved": false,
-        "result": null,
+        "solved": true,
+        "result": "gst,khg,nhn,tvb,vdc,z12,z21,z33",
         "attempts": [],
-        "time": null
+        "time": 70.3917
       }
     },
     {
