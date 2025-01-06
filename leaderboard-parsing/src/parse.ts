@@ -133,6 +133,20 @@ const parseLeaderboardAndRenderCharts = () => {
     labels.push(minDate.toISOString());
   }
 
+  console.log(`*** Winner's Circle ***`);
+  const winnersCircle = Object.entries(starTimesByMember).map(memberStarTimes => {
+    if (memberStarTimes[1].length === 50) {
+      const fiftyStarMember = members.find(m => m.id === Number.parseInt(memberStarTimes[0]))!!;
+      return { member: fiftyStarMember, times: memberStarTimes[1] };
+    }
+    return null;
+  }).filter(value => value !== null) as { member: Member; times: number[] }[];
+  winnersCircle.sort((a, b) => a.member.last_star_ts - b.member.last_star_ts);
+  winnersCircle.forEach(winner => {
+    console.log(`${winner.member.name} - ${new Date(winner.member.last_star_ts * 1000)}`);
+  })
+
+
   renderAndWriteChart('perMemberBurnUpChart.png', {
     type: 'line',
     data: {
