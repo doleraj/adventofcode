@@ -29,3 +29,9 @@
  *     import { myUtil } from '../utils'
  *
  */
+
+import "./array-extensions.js"
+export * from "../utils/math.js";
+export * from "../utils/memoize.js";
+export * from "../utils/data-structures.js";
+export * from "../utils/dijkstras.js";
