@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2023",
-    "module": "es2020",
+    "target": "esNext",
+    "module": "esNext",
     "removeComments": true,
     "declaration": true,
     "outDir": "./dist",
