@@ -5,6 +5,7 @@ export type DijkstrasCoordinate = { y: number; x: number; distance: number; prev
 export type DijkstrasAPCoordinate = { y: number; x: number; distance: number; orientation: Orientation; previousNodes: DijkstrasAPCoordinate[] };
 
 export const toSetToken = (thing: { y: number, x: number }): string => `[${thing.y},${thing.x}]`;
+export const toSetToken3d = (thing: { z: number, y: number, x: number }): string => `[${thing.z},${thing.y},${thing.x}]`;
 export const toAPSetToken = (thing: { y: number, x: number, orientation: Orientation }): string =>
   `[${thing.y},${thing.x},${thing.orientation}]`;
 
