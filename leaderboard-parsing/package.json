@@ -4,7 +4,7 @@
   "description": "Parsing leaderboard JSON output",
   "type": "module",
   "scripts": {
-    "start": "aocrunner day",
+    "start": "tsc && node ./dist/parse.js",
     "build": "tsc"
   },
   "keywords": [

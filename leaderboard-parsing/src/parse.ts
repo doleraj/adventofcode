@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { Chart, ChartConfiguration, ChartItem, ChartType, DefaultDataPoint } from "chart.js/auto";
+import {Chart, ChartConfiguration, ChartDataset, ChartItem, ChartType, DefaultDataPoint} from "chart.js/auto";
 import chartDataLabels, {Context as LabelOptionContext} from 'chartjs-plugin-datalabels';
 import { createCanvas } from "canvas";
 import 'chartjs-adapter-date-fns';
@@ -122,17 +122,6 @@ const parseLeaderboardAndRenderCharts = () => {
       starTimesByMemberWithPosition[member.id] = starTimesWithPosition;
   }
 
-  const minDate = new Date();
-  minDate.setUTCFullYear(2024, 11, 1);
-  minDate.setUTCHours(5, 0, 0);
-  const maxDateTS = Math.max(...members.map((member) => Math.max(...starTimesByMember[member.id])));
-
-  const labels = [minDate.toISOString()];
-  while (minDate.getTime() < maxDateTS * 1000) {
-    minDate.setHours(minDate.getHours() + 1);
-    labels.push(minDate.toISOString());
-  }
-
   console.log(`*** Winner's Circle ***`);
   const winnersCircle = Object.entries(starTimesByMember).map(memberStarTimes => {
     if (memberStarTimes[1].length === 50) {
@@ -144,8 +133,91 @@ const parseLeaderboardAndRenderCharts = () => {
   winnersCircle.sort((a, b) => a.member.last_star_ts - b.member.last_star_ts);
   winnersCircle.forEach(winner => {
     console.log(`${winner.member.name} - ${new Date(winner.member.last_star_ts * 1000)}`);
-  })
+  });
 
+  const minDate = new Date();
+  minDate.setUTCFullYear(2024, 11, 1);
+  minDate.setUTCHours(5, 0, 0);
+  const maxDateTS = Math.max(...members.map((member) => Math.max(...starTimesByMember[member.id])));
+
+  const labels = [minDate.toISOString()];
+  while (minDate.getTime() < maxDateTS * 1000) {
+    minDate.setHours(minDate.getHours() + 1);
+    labels.push(minDate.toISOString());
+  }
+
+  let chartDate = new Date();
+  chartDate.setUTCFullYear(2025, 11, 1);
+  chartDate.setUTCHours(5, 0, 0);
+  let index = 1;
+  console.log("**********");
+    while (chartDate.getTime() < maxDateTS * 1000) {
+        renderAndWriteChart(`perMemberBurnUpChart_${index++}.png`, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: members.filter(member => starTimesByMember[member.id].length !== 0).map((member) => {
+                    const dataset:ChartDataset<'line', {
+                        x: string;
+                        y: number;
+                    }[]> = {
+                        label: member.name,
+                        data: starTimesByMember[member.id]
+                            .filter((time) => new Date(time * 1000) <= chartDate)
+                            .map((time, index) => {
+                                return {x: new Date(time * 1000).toISOString(), y: index + 1};
+                            }),
+                        datalabels: {
+                            align: 'right',
+                            color: (context: LabelOptionContext) => {
+                                return context.dataset.backgroundColor!!.toString();
+                            },
+                            rotation: 15,
+                            formatter: (value: any, context: LabelOptionContext) => {
+                                if (context.dataIndex === context.dataset.data.length - 1) {
+                                    return context.dataset.label;
+                                } else {
+                                    return "";
+                                }
+                            },
+                        },
+                    };
+                    return dataset;
+                }),
+            },
+            options: {
+                layout: {
+                    padding: {
+                        right: 100,
+                        top: 100,
+                    },
+                },
+                scales: {
+                    x: {
+                        type: 'timeseries',
+                        ticks: {
+                            autoSkip: true,
+                        }
+                    },
+                    y: {
+                        max: 50,
+                        min: 0
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                },
+            }
+        });
+
+    const membersBeforeDate = Object.entries(starTimesByMember).filter(entry => entry[1].filter(t => new Date(t * 1000) <= chartDate).length > 0).length;
+    const starsBeforeDate = Object.values(starTimesByMember).flat().filter((time) => new Date(time * 1000) <= chartDate).reduce((acc, v) => acc + 1, 0);
+    console.log(chartDate.toISOString(), starsBeforeDate / membersBeforeDate);
+
+    chartDate.setDate(chartDate.getDate() + 1);
+  }
 
   renderAndWriteChart('perMemberBurnUpChart.png', {
     type: 'line',
